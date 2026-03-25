@@ -1,0 +1,19 @@
+Esse é o trabalho 1 para a cadeira de Sistemas Embarcados I. 
+Para o funcionamento adequado do código precisa criar uma biblioteca chamada Secrets.h 
+dentro de src para uma adição segura de credenciais de wifi (boas práticas para evitar subir 
+acidentalmente credenciais de wifi para o github) assim como adicionar a mesma
+no .gitignore! 
+
+
+
+O arquivo Secrets.h
+
+tem esse template:
+
+#ifndef SECRETS_H
+#define SECRETS_H
+
+const char* WIFI_SSID = "seu_wifi"; 
+const char* WIFI_PASS = "sua_senha"; 
+
+#endif
