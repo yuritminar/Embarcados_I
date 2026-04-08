@@ -1,13 +1,13 @@
 #include <Arduino.h>
 
 /****** Bloco de configuração Wifi ******/
-
 #include <WiFi.h>
 #include <WebServer.h>
 #include <ESPAsyncWebServer.h>
 #include "FS.h"
 #include "SPIFFS.h"
 #include "secrets.h"
+#include "MQUnifiedsensor.h" 
 
 
 bool modoTeste = true; //Variável que define quando eu tenho o hardware em mãos ou não
@@ -18,19 +18,50 @@ AsyncWebServer server(80);
 
 /****** Fim do bloco de coniguração Wifi *******/
 
-/******* Bloco de configuração DHT22 ******/
+/*configurações de relé*/
+bool releLigado = false;
 
+
+/**** Bloco de configuração do MQ-7 ****/
+//Definições
+#define placa "Esp-32"
+#define Voltage_Resolution 3.3
+#define pin 13 //Analog input 0 of your arduino
+#define type "MQ-7" //MQ7
+#define ADC_Bit_Resolution 12 // For arduino UNO/MEGA/NANO
+#define RatioMQ7CleanAir 27.5 //RS / R0 = 27.5 ppm 
+#define PWMPin 5 // Pin connected to mosfet
+
+// Declaração do sensor
+MQUnifiedsensor MQ7(placa, Voltage_Resolution, ADC_Bit_Resolution, pin, type);
+unsigned long oldTime = 0;
+
+
+
+/**** Fim do bloco de configuração do MQ-7 ****/
+
+
+
+
+/******* Bloco de configuração DHT22 ******/
 #include <DHT.h>
 #define DHT22_PIN 21 //pino que o DHT22 ta conectado
 DHT dht22(DHT22_PIN, DHT22);
-
-
 /****** Fim do bloco de configuração DHT22 ******/
 
+/****** Bloco de configuração do MPL3115A2 ******/
+#include <Wire.h>
+#include <Adafruit_MPL3115A2.h>
+Adafruit_MPL3115A2 baro = Adafruit_MPL3115A2();
+/****** Fim do bloco de configuração do MPL3115A2 ******/
+
 #define led 2
+
 /**** Definição de protótipos ****/
 float le_temp();
 float le_umid();
+float le_alt();
+float le_pres();
 String processor(const String& var);
 
 /*** Os protótipos abaixo existem para lidar com as variáveis de forma inteligente
