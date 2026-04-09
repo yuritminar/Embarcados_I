@@ -87,8 +87,22 @@ void setup() {
     return;
   }
   
-  dht22.begin();
- 
+  if(modoTeste == false){
+    dht22.begin();
+
+    Wire.begin();
+
+    if (!baro.begin()) {
+      Serial.println("Erro ao inicializar MPL3115A2!");
+    }
+
+    MQ7.setRegressionMethod(1); // método padrão
+    MQ7.init();
+    MQ7.setR0(10); // valor inicial (ideal calibrar depois)
+} else {  
+    Serial.println("Modo de teste ativado. Valores fixos serão usados.");
+  }
+
   WiFi.begin(ssid, password);
   int tentativas = 0;
 
@@ -103,7 +117,7 @@ void setup() {
 
   server.serveStatic("/", SPIFFS, "/");
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(SPIFFS, "/index.html", String(), false, processor);
+    request->send(SPIFFS, "/index.html", "text/html", false, processor);
   });
   server.begin();
 
@@ -111,8 +125,10 @@ void setup() {
 
 void loop() {
 
-getTemp();
-getUmid();
+Serial.print(getTemp());
+delay(2000);
+//getTemp();
+//getUmid();
 
 
   
@@ -231,6 +247,25 @@ float getPres() {
 }
 /**** Fim das funções do MPL3115A2 ****/
 
+
+// else if (var == "VENT_STATUS") {
+//    if (setVent()) {
+//      return String("Ventoinha ligada/desligada com sucesso!");
+//    } else {
+//      return String("Falha ao ligar/desligar a ventoinha.");
+//    }
+//  } else if (var == "RELE_STATUS") {
+//    if (setRele()) {
+//      return String("Relé ligado/desligado com sucesso!");
+//    } else {
+//      return String("Falha ao ligar/desligar o relé.");
+//    }
+//
+
+
+
+
+
 /**** funções da ventoinha e do relé ****/
 bool setVent() {
   // Lógica para ligar ou desligar a ventoinha
@@ -251,36 +286,24 @@ String processor(const String& var){
     float temp = getTemp();
     String tempStr = String(temp, 2);
     return tempStr;
-  } else if (var == "UMID"){
-    float umid = getUmid();
-    String umidStr = String(umid, 2);
-    return umidStr;
-  } else if (var == "CO") {
-    float CO = getCO();
-    String COStr = String(CO, 2);
-    return COStr;
-  } else if (var == "ALT") {
-    float alt = getAlt();
-    String altStr = String(alt, 2);
-    return altStr;
-  } else if (var == "PRES") {
-    float pres = getPres();
-    String presStr = String(pres, 2);
-    return presStr;
-  } else if (var == "VENT_STATUS") {
-    if (setVent()) {
-      return String("Ventoinha ligada/desligada com sucesso!");
-    } else {
-      return String("Falha ao ligar/desligar a ventoinha.");
-    }
-  } else if (var == "RELE_STATUS") {
-    if (setRele()) {
-      return String("Relé ligado/desligado com sucesso!");
-    } else {
-      return String("Falha ao ligar/desligar o relé.");
-    }
+  //} else if (var == "UMID"){
+  //  float umid = getUmid();
+  //  String umidStr = String(umid, 2);
+  //  return umidStr;
+  //} else if (var == "CO") {
+  //  float CO = getCO();
+  //  String COStr = String(CO, 2);
+  //  return COStr;
+  //} else if (var == "ALT") {
+  //  float alt = getAlt();
+  //  String altStr = String(alt, 2);
+  //  return altStr;
+  //} else if (var == "PRES") {
+  //  float pres = getPres();
+  //  String presStr = String(pres, 2);
+  //  return presStr;
   } else {
-    return String("Sem valor");
+    return String();
   }
 }
 /**** Fim da função processor ****/
