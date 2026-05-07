@@ -4,3 +4,5 @@
 .vscode/launch.json
 .vscode/ipch
 secrets.h
+WebView/electron-quick-start    
+WebView/webview_do_zero/node_modules
